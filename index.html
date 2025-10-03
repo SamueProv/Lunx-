@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunxResell - E-commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f172a;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .star {
+            color: #fbbf24;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-slate-900">
+<!-- Header --><header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-2xl sticky top-0 z-50 border-b border-slate-700">
+<div class="container mx-auto px-4 py-4">
+<div class="flex items-center justify-between flex-wrap gap-4">
+<div class="flex items-center gap-4">
+<h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">LunxResell</h1>
+</div>
+<div class="flex items-center gap-4">
+<div id="userInfo" class="hidden items-center gap-2 bg-slate-700 px-4 py-2 rounded-lg border border-slate-600">&nbsp;</div>
+<button id="loginBtn" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 py-2 rounded-lg font-semibold transition"> Accedi </button> <button id="logoutBtn" class="hidden items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition"> Esci </button> <button class="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg transition border border-slate-600"> 🛒 <span id="cartCount" class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">0</span> </button></div>
+</div>
+</div>
+</header><!-- Login Modal -->
+<div id="loginModal" class="modal">
+<div class="bg-slate-800 rounded-xl shadow-2xl p-8 max-w-md w-full border border-slate-700">
+<h2 class="text-2xl font-bold mb-6 text-white">Accedi al tuo account</h2>
+<div class="mb-4"><label class="block text-slate-300 mb-2 font-semibold">Email</label> <input id="loginEmail" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white" type="email" /></div>
+<div class="mb-6"><label class="block text-slate-300 mb-2 font-semibold">Password</label> <input id="loginPassword" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white" type="password" /></div>
+<div class="flex gap-3"><button id="confirmLogin" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2 rounded-lg font-semibold transition"> Accedi </button> <button id="cancelLogin" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg font-semibold transition border border-slate-600"> Annulla </button></div>
+<div class="mt-4 text-center text-slate-400 text-sm">
+<p>Demo: usa qualsiasi email/password</p>
+<p class="mt-1">Venditore: <span class="text-purple-400 font-semibold">swshadow25@yahoo.com</span></p>
+</div>
+</div>
+</div>
+<!-- Main Content --><main class="container mx-auto px-4 py-8"><!-- Seller Panel -->
+<div id="sellerPanel" class="hidden mb-8 bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-2xl font-bold text-white">Pannello Venditore</h2>
+<button id="toggleAddProduct" class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition"> ➕ Aggiungi Prodotto </button></div>
+<div id="addProductForm" class="hidden mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"><input id="newProductName" class="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-slate-400" type="text" placeholder="Nome prodotto" /> <input id="newProductPrice" class="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-slate-400" step="0.01" type="number" placeholder="Prezzo (&euro;)" /> <input id="newProductImage" class="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-slate-400" type="url" placeholder="URL Immagine (opzionale)" /> <button id="confirmAddProduct" class="md:col-span-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-2 rounded-lg font-semibold transition"> Conferma Aggiunta </button></div>
+</div>
+<!-- Products Grid -->
+<div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">&nbsp;</div>
+</main><!-- Product Detail Modal -->
+<div id="productModal" class="modal">
+<div class="bg-slate-800 rounded-xl shadow-2xl p-8 max-w-4xl w-full max-h-screen overflow-y-auto border border-slate-700"><button id="closeProduct" class="float-right text-slate-400 hover:text-white text-2xl font-bold">&times;</button>
+<div class="grid md:grid-cols-2 gap-8 mb-8"><img id="detailImage" class="w-full rounded-lg border border-slate-700" alt="" />
+<div>
+<h2 id="detailName" class="text-3xl font-bold mb-4 text-white">&nbsp;</h2>
+<p id="detailPrice" class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-6">&nbsp;</p>
+<button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-lg font-bold text-lg transition"> Aggiungi al Carrello </button></div>
+</div>
+<!-- Reviews Section -->
+<div class="border-t border-slate-700 pt-8">
+<h3 class="text-2xl font-bold mb-6 text-white">Recensioni (<span id="reviewCount">0</span>)</h3>
+<!-- Add Review Form -->
+<div id="addReviewForm" class="hidden bg-slate-700 p-6 rounded-lg mb-6 border border-slate-600">
+<h4 class="font-bold mb-4 text-white">Lascia una recensione</h4>
+<div class="mb-4"><label class="block text-slate-300 mb-2">Valutazione</label><select id="newRating" class="px-4 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white w-full">
+<option value="5">⭐⭐⭐⭐⭐ (5)</option>
+<option value="4">⭐⭐⭐⭐ (4)</option>
+<option value="3">⭐⭐⭐ (3)</option>
+<option value="2">⭐⭐ (2)</option>
+<option value="1">⭐ (1)</option>
+</select></div>
+<div class="mb-4"><label class="block text-slate-300 mb-2">Commento</label> <textarea id="newComment" class="w-full px-4 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white" rows="3"></textarea></div>
+<button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2 rounded-lg font-semibold transition"> Pubblica Recensione </button></div>
+<!-- Reviews List -->
+<div id="reviewsList" class="space-y-4">&nbsp;</div>
+</div>
+</div>
+</div>
+</body>
+</html>
